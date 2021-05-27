@@ -1,0 +1,141 @@
+  <ul>
+                    <li class="dropdown">
+                        <a href="#" data-toggle="dropdown" class="d-inline p-2 bg-primary text-white rounded-left dropdown-toggle">Default Income<b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <div class="checkbox1">
+                                    &nbsp;
+                                    <label>
+                                        <input type="checkbox" name="demo" value="salary">&nbsp;Salary
+                                    </label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="checkbox2">
+                                    &nbsp;
+                                    <label>
+                                        <input type="checkbox" name="demo" value="house_property">&nbsp;House Property   
+                                    </label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="checkbox3">
+                                    &nbsp;
+                                    <label>
+                                        <input type="checkbox" name="demo" value="interest">&nbsp;Interest
+                                    </label>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div> -->
+                        <!-- <div class="d-inline p-2 bg-primary text-white mt-2 rounded">Custom Income +</div> -->
+ // $(document).ready(function(){
+        //     var default_income = [];
+        //     // dropdown select incomes record
+        //     $('input[name="demo"]:checked');
+        //     $('input[name="demo"]:checked').each(function(){
+        //         default_income.push(this.value);
+        //     });
+        // });
+
+        <table class="table table-hover">
+                        <thead>
+                          <tr>
+                            <th scope="col">SL.No</th>
+                            <th scope="col">Category Name</th>
+                            <th scope="col">IsParent</th>
+                            <th scope="col">Parent Name</th>
+                            <th scope="col"><a href>Add</a></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <form method="post" action="{% url 'application:income_category' %}">
+                              <th scope="row">1</th>
+                              <td><input type="text"></td>
+                              <td><input type="text"></td>
+                              <td><input type="text"></td>
+                            </form>
+                          </tr>
+                        </tbody>
+                      </table>
+                    
+ <!-- Editable table -->
+              <div class="card">
+                <h3 class="card-header text-center font-weight-bold bg-primary text-white text-uppercase py-3">Parent Category</h3>
+                <div class="card-body">
+                  <div id="table" class="table-editable">
+                    <!-- <span class="table-add float-right mr-2"><a class="text-success"><i
+                          class="fas fa-plus fa-2x" aria-hidden="true"></i></a></span> -->
+                    <table class="table table-striped table-responsive text-center">
+                      <thead>
+                        <tr>
+                          <th class="text-center">SL.NO</th>
+                          <th class="text-center">Category Name</th>
+                          <th class="text-center">IsChild</th>
+                          <th class="text-center">Parent Name</th>
+                          <th class="text-center">Remove</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <!-- This is our clonable table line -->
+                        <form method="get" action="{url 'application:income_category '}">
+                          {% if data.category %}
+                            {% for items in data.category %}
+                              <tr>
+                                <td class="text-center">{{items.id}}</td>
+                                <td class="text-center">{{items.category_name}}</td>
+                                <td class="text-center">{{items.is_child}}</td>
+                                <td class="text-center">{{items.parent_category}}</td>
+                                <td class="pt-3-half">
+                                  <a href="{% url 'application:income_category' %}{{items.id}}/delete">
+                                    <img src="{% static 'img/delete.svg' %}" style="width: 30px; height: 30px;" alt="no">
+                                  </a>
+                                </td>
+                              </tr>
+                            {% endfor %}
+                          {% endif %}
+                        </form>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+                <!-- <form method="post" action="{% url 'application:income_category' %}/put">
+                          {% csrf_token %}
+                          <tr>
+                            <td></td>
+                            <td><input type="text" size="5" name="category_name" class="form-control table-active text-center"></td>
+                            <td class="table-active text-center">
+                             <select class="form-control" id="ischilddropdown" name="ischild">
+                               <option value="1">Yes</option>
+                               <option value="0">No</option>
+                             </select>
+                            </td>
+                            <td><input id="parent_name" type="text" size="5" name="parent_name" class="form-control table-active text-center parent_name"></td>
+                            <td>
+                              <input type="image" name="submit" src="{% static 'img/save.svg' %}" alt="Submit" style="width: 33px;" />
+                            </td>
+                          </tr>
+                        </form> -->
+
+                         <td class="pt-3-half">
+                                  <a href="{% url 'application:income_category' %}{{items.id}}/delete">
+                                    <img src="{% static 'img/delete.svg' %}" style="width: 30px; height: 30px;" alt="no">
+                                  </a>
+                                </td>
+
+
+
+                                {% if data.category %}
+                          {% for items in data.category %}
+                            {% if items.parent_category == items.id %}
+                              {{'yes'}}
+                            {% else %}
+                              {{'no'}}
+                            {% endif %}
+                          {% endfor %}
+                        {% endif %}

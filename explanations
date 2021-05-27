@@ -1,0 +1,62 @@
+Date: 5/8/2020
+1. Virtual Environment:
+    modification - converted the default python path to venv path
+    reason - For easy maintenance and convenient recovery.
+2. Modules imported:
+    a.DATABASE(mysql):
+        server - Mysql
+        modification - settings->database.(converting the sqlite3 to mysql)
+        reason - sqlite3 is flat file storage. so it can be used only in parent machine. Our project is a 
+        real time project so user will from all over the place so we opt for Mysql. It has efficient 
+        security. We can indirectly access to the db.
+    b. Faker Library - for generating random data.
+        Reference -> https://faker.readthedocs.io/en/master/
+    c. allauth - for social authentication
+        Reference -> https://learndjango.com/tutorials/django-allauth-tutorial
+                     https://docs.djangoproject.com/en/3.1/topics/auth/customizing/
+                     https://docs.djangoproject.com/en/3.1/ref/contrib/auth/
+3. Mysql Client:
+    To recover this error (OSError: mysql_config not found ubuntu) run (a)
+    query - a) sudo apt-get install libmysqlclient-dev,
+            b) pip install mysql.
+    reason - We need to connect Mysql server and visual studio 
+4. Mysql workbench:
+    source - installed from Ubuntu software.
+    reason - For convenient usage of mysql. And visualizing the tables are quite easier.
+5. Project:
+    project name - mfm
+    app name - budget manager
+6. Models:
+    7 tables are created and migrated.
+Date: 6/8/2020
+7. Connecting with mysql workbench:
+    issues faced - AppArmor policy blocks mysql server connection. 
+    query used - 
+    sudo snap connect mysql-workbench-community:password-manager-service :password-manager-service
+    explanation - converted the root user into the user created (Marina)
+Date: 7/8/2020
+8. Worked on generating fake data for the database
+Date: 20/8/2020
+9. Worked on social authentication using allauth
+   settings.py:
+    site_id, login_direct_url, social_account_providers, authentication_backends are added
+    allauth and its family are included in the installed apps before specifing the app name.
+    issues faced - 400. Redirect uri mismatch. 
+    solution - redirect uri in the google API console.
+Date: 16/9/2020
+10. Front End Design:
+        home page - https://startbootstrap.com/previews/sb-admin-2/
+                    https://www.wrappixel.com/demos/free-admin-templates/monster-admin-lite/monster-html/index.html
+                    https://demo.w3layouts.com/demos_new/template_demo/30-05-2017/visitors-demo_Free/217035454/web/index.html
+11. Google authentication:
+        issues faced - DoesNotExist at /accounts/google/login/
+                       SocialApp matching query does not exist.
+        solution - https://www.youtube.com/watch?v=1yqKNQ3ogKQ&feature=youtu.be
+        explanation - In default admin page we should have only one site 
+12. Git:
+        Issue - first pull befor commit (file exceeds 100mb)
+        solution - git filter-branch --force --index-filter 'git rm --cached --ignore-unmatch mfm_proj_env/data_set/debit_credit.csv' --prune-empty --tag-name-filter cat -- --all
+                    
+
+
+    

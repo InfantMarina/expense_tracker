@@ -1,0 +1,80 @@
+{% extends 'application/base/main_base.html' %}
+{% load static %}
+{% block main-content %}
+
+<div id="content-wrapper" class="d-flex flex-column">
+
+  <!-- Begin Page Content -->
+  <div class="container-fluid">
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+      <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Data Entries</h6>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+            <thead>
+              <tr>
+                <th>Category Name</th>
+                <th>Transaction Type</th>
+                <th>Amount</th>
+                <th>Description</th>
+                <th>Payee</th>
+                <th>Transaction Date</th>
+                <th>Update</th>
+                <th>Remove</th>
+              </tr>
+            </thead>
+            <tfoot>
+              <tr>
+                <th>Category Name</th>
+                <th>Transaction Type</th>
+                <th>Amount</th>
+                <th>Description</th>
+                <th>Payee</th>
+                <th>Transaction Date</th>
+                <th>Update</th>
+                <th>Remove</th>
+              </tr>
+            </tfoot>
+            <tbody>
+              {% if data.income %}
+                {% for item in data.income %}
+                  <tr>
+                    <td>{{item.category.category_name}}</td>
+                    <td>{{item.transaction_type}}</td>
+                    <td>{{item.amount}}</td>
+                    <td>{{item.description}}</td>
+                    <td>{{item.payee}}</td>
+                    <td>{{item.transaction_date}}</td>
+                    <td class="text-center pt-3-half">
+                      <a href="{% url 'application:income' %}/{{item.id}}/edit" data-id={{items.id}} id="edit_text">
+                      <img src="{% static 'img/edit.svg' %}" style="width: 22px; height: 22px;" alt="no">
+                      </a>
+                    </td>
+                    <td class="text-center pt-3-half">
+                      <a href="{% url 'application:search_data' %}/{{item.id}}/delete">
+                      <img src="{% static 'img/delete.svg' %}" style="width: 30px; height: 30px;" alt="no">
+                      </a>
+                    </td>
+                  </tr>
+                {% endfor %}
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block scriptblock %}
+  <!-- Page level plugins -->
+  <script src="{% static 'vendor/datatables/jquery.dataTables.min.js' %}"></script>
+  <script src="{% static 'vendor/datatables/dataTables.bootstrap4.min.js' %}"></script>
+
+  <!-- Page level custom scripts -->
+  <script src="{% static 'js/demo/datatables-demo.js' %}"></script>
+{% endblock %}

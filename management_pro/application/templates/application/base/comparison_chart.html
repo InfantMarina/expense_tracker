@@ -1,0 +1,160 @@
+{% extends 'application/base/main_base.html' %}
+{% load static %}
+{% block main-content %}
+
+<div class="container-fluid">
+   <!-- content Heading -->
+		<div class="d-sm-flex align-items-center justify-content-between mb-4">
+			<h1 class="h3 mb-0 text-gray-800">Comparison Chart</h1>
+			<a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
+		</div>
+  <!-- Content Row -->
+  <div class="row mb-4">
+    <div class="col-sm">
+      <form id="picker" method="post" action="{% url 'application:comparison_chart' %}" >
+        {% csrf_token %}
+        <div class="dropdown show">
+          <a class="btn btn-primary btn-lg dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Select Duration
+          </a>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">            
+            <a id="btn_datewise" class="dropdown-item text-center mt-2 mb-2">Datewise</a>
+            <a id="btn_monthwise" class="dropdown-item text-center mt-2 mb-2">Monthly</a>
+            <a id="btn_range" class="dropdown-item text-center mt-2 mb-2">Custom Range</a>
+          </div>
+        </div>
+    </div>
+    <div class="col-sm">
+      <div class="card" style="width: 35rem; height: 20rem;">
+        <div class="card-body" id="dp_card">
+          <div id="dynamic_form_elements">
+            <div id="dp_datewise">
+              Select Date
+              <input type="text" id="datewise_widget" name="datewise_widget">    
+            </div>
+            <div id="dp_monthwise">
+              Select Month
+              <input type="text" id="monthwise_widget" name="monthwise_widget">    
+            </div>
+            <div id="dp_customrange">
+              Select Custom Range
+              <input type="text" id="customrange_widget" name="customrange_widget">
+            </div>
+          </div>
+          <input type="submit" class="btn btn-primary" value="Show">
+        </div>
+      </div>
+    </div>
+    <div class="col-sm"></div>
+    </form>
+  </div>
+  <!-- Content Row -->
+  <div class="row">
+    <div class="col mx-auto">
+      <div class="card shadow mb-4">
+        <div class="card-header py-3">
+          <h6 class="m-0 font-weight-bold text-primary">Custom Report</h6>
+        </div> 
+        <div class="card-body">
+          <div class="chart-pie pt-4">
+            <canvas id="custom_myPieChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col mx-auto">
+      <div class="card shadow mb-4">
+        <div class="card-header py-3">
+          <h6 class="m-0 font-weight-bold text-primary">Today's Report</h6>
+        </div> 
+        <div class="card-body">
+          <div class="chart-pie pt-4">
+            <canvas id="myPieChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scriptblock %}
+<script>
+
+  $(document).ready(function(){
+    $("#dp_datewise, #dp_monthwise, #dp_customrange").hide();
+  });
+  $(document).on("click","#btn_datewise, #btn_monthwise, #btn_range",function(e){
+    let clicked_button = this.id;
+
+    if(clicked_button == "btn_datewise") {
+      // Show only datewise widget and hide the remaining.
+      $( "#dp_datewise" ).show();
+      $( "#dp_monthwise, #dp_customrange ").hide();
+      $(' input[name="datewise_widget"] ').daterangepicker({
+        singleDatePicker: true,
+        showDropdowns: true,
+        autoApply: true,
+      }, function(start, end, label) {
+        $(" #datewise_widget ").val((start.format('YYYY-MM-DD')));
+      });
+      $(" #datewise_widget ").focus();
+    }
+
+    else if(clicked_button == "btn_monthwise") {
+      $( "#dp_monthwise ").show();
+      $(" #dp_datewise, #dp_customrange ").hide();
+        $(' input[name="monthwise_widget"] ').daterangepicker({
+          singleDatePicker: true,
+          showDropdowns: true,
+          autoApply: true,
+        },function(start, end, label) {
+          $(" #monthwise_widget ").val((start.format('YYYY-MM')));
+        });
+      $(" #monthwise_widget ").focus();
+    }
+
+    else{
+      $(" #dp_customrange ").show();
+      $(" #dp_datewise, #dp_monthwise ").hide();
+        $( 'input[name="customrange_widget"] ').daterangepicker({
+          opens: 'center',
+          autoApply: true,
+        }, function(start, end, label) {
+          $(" #customrange_widget ").val((start.format('YYYY-MM-DD')));
+        });
+      $(" #customrange_widget ").focus();
+    }
+  });
+
+  // today data
+  var dict_keys = "{{ data.transaction_keys }}";
+  var dict_values = "{{ data.transaction_values }}";
+  // converted string into javascript object
+  var json_keys = JSON.parse(dict_keys.replace(/(&quot\;)/g,"\""));
+  var json_values = JSON.parse(dict_values.replace(/(&quot\;)/g,"\""));
+
+  // custom data
+  var custom_dict_keys = "{{ data.custom_transaction_keys }}";
+  var custom_dict_values = "{{ data.custom_transaction_values }}";
+  // converted string into javascript object
+  var custom_json_keys = JSON.parse(custom_dict_keys.replace(/(&quot\;)/g,"\""));
+  var custom_json_values = JSON.parse(custom_dict_values.replace(/(&quot\;)/g,"\""));
+</script>
+
+  <!-- Page level plugins -->
+  <script src="{% static 'vendor/chart.js/Chart.min.js' %}"></script>
+  <!-- Page level custom scripts -->
+  <script src="{% static 'js/demo/chart-pie-compare.js' %}"></script>
+  
+  <!-- Page level custom scripts for calender-->
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.js"></script>
+  <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/redmond/jquery-ui.css">
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.js"></script>
+
+  <!-- Page level custom scripts for custom range calender -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" /> 
+  {% endblock %}

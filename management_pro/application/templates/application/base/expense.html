@@ -1,0 +1,162 @@
+{% extends 'application/base/main_base.html' %}
+{% load static %}
+{% block main-content %}
+ 
+	<!-- Begin Page Content -->
+	<div class="container-fluid">
+		<!-- content Heading -->
+		<div class="d-sm-flex align-items-center justify-content-between mb-4">
+			<h1 class="h3 mb-0 text-gray-800">Expense</h1>
+			<a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
+		</div>
+		<div class="row">
+			<div class="col">
+				<div class="card border-left-primary shadow">
+					<h3 class="card-header text-center bg-primary text-white text-uppercase py-2">New</h3>
+					<div class="card-body">
+						<div id="table">
+							<table class="table table-responsive pl-4 text-center">
+								<tbody>
+									{% if data.single_transaction %}
+										<form method="post" action="{% url 'application:expense' %}{{data.single_transaction.id}}/edit">
+									{% else %}
+										<form method="post" action="{% url 'application:expense' %}/put">
+									{% endif %}
+										{% csrf_token %}
+										<div class="form-group">
+											<tr id="category-col">
+												<th class="text-center">Select Category</th>
+												{% if data.single_transaction %}
+													<td class="text-center">
+														<select class="form-control text-center" id="category_name" name="category_name">
+															{% if data.category %}
+																{% for items in data.category %}
+																	{% if items.category_type == 'expense' %}
+																		<option value="{{items.id}}">{{items.category_name}}</option>
+																	{% endif %}
+																{% endfor %}
+															{% endif %}
+														</select>
+													</td>
+												{% else %}
+													<td>
+														<select class="form-control text-center" id="category_name" name="category_name">
+															{% if data.category %}
+																{% for items in data.category %}
+																	{% if items.category_type == 'expense' %}
+																		<option value="{{items.id}}">{{items.category_name}}</option>
+																	{% endif %}
+																{% endfor %}
+															{% endif %}
+														</select>
+													</td>
+												{% endif %}
+											</tr>
+											<tr id="amount-col">
+												<th class="text-center">Amount</th>
+												{% if data.single_transaction %}
+													<td><input type="text" name="amount" id="amount-col" class="form-control text-center" value="{{data.single_transaction.amount}}"></td>
+												{% else %}
+													<td><input type="text" name="amount" id="amount-col" class="form-control text-center"></td>
+												{% endif %}
+											</tr>
+											<tr id="description-col">
+												<th class="text-center">Description</th>
+												{% if data.single_transaction %}
+													<td><input type="text" name="description" class="form-control text-center" value="{{data.single_transaction.description}}"></td>
+												{% else %}
+													<td><input type="text" name="description" class="form-control text-center"></td>
+												{% endif %}
+											</tr>
+											<tr id="payee-col">
+												<th class="text-center">Payee</th>
+												{% if data.single_transaction %}
+													<td><input type="text" name="payee" class="form-control text-center" value="{{data.single_transaction.payee}}"></td>
+												{% else %}
+													<td><input type="text" name="payee" class="form-control text-center"></td>
+												{% endif %}
+											</tr>
+											<tr id="date-col">
+												<th class="text-center">Date</th>
+												{% if data.single_transaction %}
+													<td><input type="text" name="date" id="datepicker-1" class="form-control text-center" value="{{data.single_transaction.transaction_date}}"></td>
+												{% else %}
+													<td><input type="text" name="date" id="datepicker-1" class="form-control text-center"></td>
+												{% endif %}
+											</tr>
+											<tr id="save-col">
+												<th class="text-center">Save</th>
+												<td><input type="image" name="submit" src="{% static 'img/save.svg' %}" alt="Submit" style="width: 33px;" /></td>
+											</tr>
+										</div>
+									</form>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col">
+				<div class="card border-left-primary shadow">
+					<h3 class="card-header text-center bg-primary text-white text-uppercase py-3">Latest Expense
+						<div class="float-right"><a href="{% url 'application:search_data' %}"><img src="{% static 'img/info.svg' %}" alt="more_info" style="width:18px;height:20px;"></a></div>
+					</h3>
+					<div class="card-body">
+						<table class="table table-responsive table-striped">
+							<thead class="bg-light">
+								<tr>
+								<th scope="col" class="text-center">Category</th>
+								<th scope="col" class="text-center">Amount</th>
+								<th scope="col" class="text-center">Description</th>
+								<th scope="col" class="text-center">Payee</th>
+								<!-- <th scope="col" class="text-center">Date</th> -->
+								<th scope="col" class="text-center">Update</th>
+								<th scope="col" class="text-center">Remove</th>
+								</tr>
+							</thead>
+							<tbody>
+								<form method="get" action="{url 'application:expense '}">
+									{% if data.transaction %}
+										{% for items in data.transaction %}
+											{% if items.transaction_type == 'expense' %}
+												<tr>
+													<td class="text-center">{{items.category.category_name}}</td>
+													<td class="text-center">{{items.amount}}</td>
+													<td class="text-center">{{items.description}}</td>
+													<td class="text-center">{{items.payee}}</td>
+													<!-- <td class="text-center">{{items.transaction_date}}</td> -->
+													<td class="text-center pt-3-half">
+														<a href="{% url 'application:expense' %}{{items.id}}/edit">
+														<img src="{% static 'img/edit.svg' %}" style="width: 22px; height: 22px;" alt="no">
+														</a>
+													</td>
+													<td class="text-center pt-3-half">
+														<a href="{% url 'application:expense' %}{{items.id}}/delete">
+														<img src="{% static 'img/delete.svg' %}" style="width: 30px; height: 30px;" alt="no">
+														</a>
+													</td>
+												</tr>
+									  		{% endif %}
+										{% endfor %}
+									{% endif %}
+								</form>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div> 
+		</div>
+	</div>
+{% endblock %}
+{% block scriptblock %}
+<script>
+	$(function() {
+		$( "#datepicker-1" ).datepicker();
+		});
+  </script>
+  <!-- calender using jquery -->
+ <link href = "https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel = "stylesheet">
+ <script src = "https://code.jquery.com/jquery-1.10.2.js"></script>
+ <script src = "https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+ 
+{% endblock %}

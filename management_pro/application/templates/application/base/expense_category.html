@@ -1,0 +1,181 @@
+{% extends 'application/base/main_base.html' %}
+{% load static %}
+{% block main-content %}
+     <!-- Begin Page Content -->
+    <div class="container-fluid">
+       <!-- Model for help -->
+      <div class="modal fade" id="centralModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <!--Content-->
+          <div class="modal-content">
+            <!-- title -->
+            <div class="modal-header">
+              <h4 class="modal-title w-100" id="myModalLabel">Info</h4>
+            </div>
+            <!--Body-->
+            <div class="modal-body">
+              Here you can edit: <br><br>
+              Name:<br>
+              A descriptive identifier for the Expense Category<br><br>
+              Ischild:<br>
+              The Category you specified is child of another Category?<br><br>
+              Parent Name:<br>
+              If Child, then choose the Parent Category
+            </div>
+            <!--Footer-->
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+        <!-- content Heading -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+          <h1 class="h3 mb-0 text-gray-800">Expense Category
+          <a href="#"><img src="{% static 'img/help.svg' %}" alt="help" data-toggle="modal" data-target="#centralModal" style="width:15px;height:15px;"></a></h1>
+          <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
+        </div>
+        <div class="container">
+          <div class="row">
+            <div class="col">
+              <div class="card">
+                <h3 class="card-header text-center bg-primary text-white text-uppercase py-3">New</h3>
+                <div class="card-body">
+                  <div id="table" class="table-editable">
+                    <span class="table-add float-right mr-2"><a class="text-primary"><i
+                          class="fas fa-plus fa-2x" aria-hidden="true"></i></a></span>
+                    <table class="table table-responsive pl-4 text-center edit-table">
+                      <thead>
+                        <tr>
+                          <th class="text-center">Name</th>
+                          <th class="text-center">Child</th>
+                          <th class="text-center">Parent</th>
+                          <th class="text-center">Save</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <form method="post" action="{% url 'application:expense_category' %}/put">
+                          {% csrf_token %}
+                          <tr>
+                            <td><input type="text" size="5" name="category_name" class="form-control text-center"></td>
+                            <td class="text-center">
+                             <select class="form-control" id="ischilddropdown" name="ischild">
+                               <option value="1">Yes</option>
+                               <option value="0">No</option>
+                             </select>
+                            </td>
+                            <td class="text-center">
+                              <select class="form-control" id="parent_name" name="parent_name">
+                                  <option value="0" hidden></option>
+                                {% if data.category %}
+                                  {% for items in data.category %}
+                                    {% if items.category_type == 'expense' %}
+                                        <option value="{{items.id}}">{{items.category_name}}</option>
+                                    {% endif %}
+                                  {% endfor %}
+                                {% endif %}
+                              </select>
+                            </td>
+                            <td>
+                              <input type="image" name="submit" src="{% static 'img/save.svg' %}" alt="Submit" style="width: 33px;" />
+                            </td>
+                          </tr>
+                        </form>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card">
+                <h3 class="card-header text-center bg-primary text-white text-uppercase py-3">Category
+                  <div class="float-right"><a href="{% url 'application:search_data' %}"><img src="{% static 'img/info.svg' %}" alt="more_info" style="width:18px;height:20px;"></a></div></h3>
+                <div class="card-body">
+                  <table class="table table-striped">
+                    <thead class="bg-light">
+                      <tr>
+                        <th scope="col" class="text-center">Sl.No</th>
+                        <th scope="col" class="text-center">Name</th>
+                        <th scope="col" class="text-center">Child</th>
+                        <th scope="col" class="text-center">Parent</th>
+                        <th scope="col" class="text-center">Remove</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <form method="get" action="{url 'application:expense_category '}">
+                        {% if data.category %}
+                          {% for items in data.category %}
+                            {% if items.category_type == 'expense' %}
+                              <tr>
+                                <th scope="row">{{items.id}}</th>
+                                <td class="text-center">{{items.category_name}}</td>
+                                {% if items.is_child == True %}
+                                  <td class="text-center">Yes</td>
+                                {% else %}
+                                  <td class="text-center">No</td>
+                                {% endif %}
+                                <td class="text-center">{{items.parent_category}}</td>
+                                <td class="text-center pt-3-half">
+                                  <a href="{% url 'application:income_category' %}{{items.id}}/delete">
+                                    <img src="{% static 'img/delete.svg' %}" style="width: 30px; height: 30px;" alt="no">
+                                  </a>
+                                </td>
+                              </tr>
+                            {% endif %}
+                          {% endfor %}
+                        {% endif %}
+                      </form>
+                    </tbody>
+                  </table>
+                </div>
+              </div> 
+            </div>
+          </div>
+        </div>
+    </div>
+{% endblock %}
+{% block scriptblock %}
+  <script>
+    $(document).ready(function(){
+      $("#parent_name").hide();
+      $(".table-add").click(function(){
+        var markup = `
+         <tr>
+          <td><input type="text" size="5" name="category_name" class="form-control text-center"></td>
+          <td class="text-center">
+            <select class="form-control" id="ischilddropdown" name="ischild">
+              <option value="1">Yes</option>
+              <option value="0">No</option>
+            </select>
+          </td>
+          <td class="text-center">
+            <select class="form-control" id="parent_name" name="parent_name">
+                <option value="0" hidden></option>
+                {% if data.category %}
+                    {% for items in data.category %}
+                        {% if items.category_type == 'expense' %}
+                            <option value="{{items.id}}">{{items.category_name}}</option>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </select>
+          </td>
+          <td>
+            <input type="image" name="submit" src="{% static 'img/save.svg' %}" alt="Submit" style="width: 33px;" />
+          </td>
+        </tr>`;
+        $(".edit-table tbody").append(markup);
+      });
+      $('#ischilddropdown').change(function(){
+        var dropdown = $("#ischilddropdown option:selected").text();
+        if(dropdown == 'Yes'){
+          $("#parent_name").show();
+        }
+        else if(dropdown == 'No'){
+          $("#parent_name").hide();
+        }
+      });
+    });
+  </script>
+{% endblock %}
